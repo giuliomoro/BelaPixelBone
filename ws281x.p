@@ -52,7 +52,7 @@
 // GPIO Pin Mapping
 
 // Pins in GPIO0
-#define gpio0_bit0 2
+#define gpio0_bit0 8
 
 #define GPIO0_LED_MASK (0\
 |(1<<gpio0_bit0)\

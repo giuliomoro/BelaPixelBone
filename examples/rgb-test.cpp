@@ -98,7 +98,7 @@ void HSBtoRGB(int hue, int sat, int val, uint8_t out[]) {
 }
 
 int main(void) {
-  const int num_pixels = 512;
+  const int num_pixels = 8;
   PixelBone_Pixel *const strip = new PixelBone_Pixel(num_pixels);
   time_t last_time = time(NULL);
   unsigned last_i = 0;
@@ -110,6 +110,7 @@ int main(void) {
       HSBtoRGB(((i + (p * 360) / num_pixels) % 360), 100, 219, rgb);
 
       strip->setPixelColor(p, rgb[0], rgb[1], rgb[2]);
+      usleep(500);
     }
 
     // wait for the previous frame to finish;
