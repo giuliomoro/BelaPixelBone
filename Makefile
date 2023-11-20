@@ -20,8 +20,10 @@ TARGETS += examples/2048
 PIXELBONE_OBJS = pixel.o gfx.o matrix.o pru.o util.o
 PIXELBONE_LIB := libpixelbone.a
 
-all: $(TARGETS) ws281x.bin
+all: $(TARGETS) $(PIXELBONE_LIB) ws281x.bin
 
+#CXXFLAGS += -I /root/Bela/include
+#LDLIBS += /root/Bela/lib/libbela.a
 CFLAGS += \
 	-std=c99 \
 	-W \
@@ -40,6 +42,14 @@ LDLIBS += \
 	-lpthread \
 
 export CROSS_COMPILE:=
+
+
+$(PIXELBONE_LIB): $(PIXELBONE_OBJS)  #let's link library files into a static library
+	ar rcs $(PIXELBONE_LIB) $(PIXELBONE_OBJS)
+
+libs: $(PIXELBONE_LIB) $(APP_LOADER_LIB)
+
+LDLIBS += $(PIXELBONE_LIB)
 
 #####
 #
@@ -74,9 +84,9 @@ PASM := $(PASM_DIR)/pasm
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 
-$(foreach O,$(TARGETS),$(eval $O: $O.o $(PIXELBONE_OBJS) $(APP_LOADER_LIB)))
+$(foreach O,$(TARGETS),$(eval $O: $O.o $))
 
-$(TARGETS):
+$(TARGETS):$(PIXELBONE_LIB)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
@@ -91,6 +101,7 @@ clean:
 		*~ \
 		$(INCDIR_APP_LOADER)/*~ \
 		$(TARGETS) \
+		$(PIXELBONE_LIB)\
 		*.bin \
 
 ###########
