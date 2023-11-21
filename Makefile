@@ -18,7 +18,7 @@ TARGETS += examples/2048
 # TARGETS += network/opc-rx
 
 PIXELBONE_OBJS = pixel.o gfx.o matrix.o pru.o util.o
-PIXELBONE_LIB := libpixelbone.a
+PIXELBONE_LIB := libpixelbone.a 
 
 all: $(TARGETS) $(PIXELBONE_LIB) ws281x.bin
 
@@ -84,7 +84,7 @@ PASM := $(PASM_DIR)/pasm
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 
-$(foreach O,$(TARGETS),$(eval $O: $O.o $))
+$(foreach O,$(TARGETS),$(eval $O: $O.o $(APP_LOADER_LIB)))
 
 $(TARGETS):$(PIXELBONE_LIB)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
