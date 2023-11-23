@@ -97,18 +97,21 @@ int pru_gpio(const unsigned gpio, const unsigned pin, const unsigned direction,
              const unsigned initial_value) {
   const unsigned pin_num = gpio * 32 + pin;
   const char *export_name = "/sys/class/gpio/export";
-  FILE *const export = fopen(export_name, "w");
-  if (!export)
-    die("%s: Unable to open? %s\n", export_name, strerror(errno));
-
-  fprintf(export, "%d\n", pin_num);
-  fclose(export);
-
   char value_name[64];
   snprintf(value_name, sizeof(value_name), "/sys/class/gpio/gpio%u/value",
            pin_num);
+  FILE* value = fopen(value_name, "w");
+  if(!value)
+  {
+	FILE *const export = fopen(export_name, "w");
+	if (!export)
+		die("%s: Unable to open? %s\n", export_name, strerror(errno));
 
-  FILE *const value = fopen(value_name, "w");
+	fprintf(export, "%d\n", pin_num);
+	fclose(export);
+  }
+
+  value = fopen(value_name, "w");
   if (!value)
     die("%s: Unable to open? %s\n", value_name, strerror(errno));
 
