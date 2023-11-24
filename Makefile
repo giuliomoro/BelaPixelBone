@@ -2,6 +2,7 @@
 #
 # The top level targets link in the two .o files for now.
 #
+# TARGETS += examples/olaClient
 TARGETS += examples/rgb-test
 TARGETS += examples/matrix-test
 TARGETS += examples/tile-test
@@ -21,6 +22,8 @@ PIXELBONE_OBJS = pixel.o gfx.o matrix.o pru.o util.o
 PIXELBONE_LIB := libpixelbone.a 
 
 all: $(TARGETS) $(PIXELBONE_LIB) ws281x.bin
+
+olaClient: examples/olaClient $(PIXELBONE_LIB) ws281x.bin
 
 #CXXFLAGS += -I /root/Bela/include
 #LDLIBS += /root/Bela/lib/libbela.a
@@ -89,6 +92,19 @@ $(foreach O,$(TARGETS),$(eval $O: $O.o $(APP_LOADER_LIB)))
 $(TARGETS):$(PIXELBONE_LIB)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
+#####
+#
+# Build the olaClient. The client allows to receive messages from
+# the ola server and send them to the neopixel strip.
+# libola and libola-dev is a prerequisite for building
+#
+
+
+CFLAGS += -I/usr/local/include  -L/usr/local/lib -pthread
+LDLIBS += -lola -lolacommon -lprotobuf -lpthread
+
+#olaClient:$(PIXELBONE_LIB)
+#	$(CCX) $(CXXFLAGS) $(LDFLAGS) -o olaClient.o olaClient.cpp $(LDLIBS)
 
 .PHONY: clean
 
@@ -103,6 +119,7 @@ clean:
 		$(TARGETS) \
 		$(PIXELBONE_LIB)\
 		*.bin \
+		examples/olaClient
 
 ###########
 # 
