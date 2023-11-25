@@ -47,9 +47,8 @@ pru_t *pru_init(const unsigned short pru_num) {
   const uintptr_t ddr_addr = proc_read("/sys/class/uio/uio0/maps/map1/addr");
   const uintptr_t ddr_size = proc_read("/sys/class/uio/uio0/maps/map1/size");
 
-  const uintptr_t ddr_start = 0x10000000;
-  const uintptr_t ddr_offset = ddr_addr - ddr_start;
-  const size_t ddr_filelen = ddr_size + ddr_start;
+  const uintptr_t ddr_offset = ddr_addr;
+  const size_t ddr_filelen = ddr_size;
 
   /* map the memory */
   uint8_t *const ddr_mem = mmap(0, ddr_filelen, PROT_WRITE | PROT_READ,
@@ -68,7 +67,7 @@ pru_t *pru_init(const unsigned short pru_num) {
                    .data_ram = pru_data_mem,
                    .data_ram_size = 8192, // how to determine?
                    .ddr_addr = ddr_addr,
-                   .ddr = (void *)(ddr_mem + ddr_start),
+                   .ddr = (void *)(ddr_mem),
                    .ddr_size = ddr_size, };
 
   printf("%s: PRU %d: data %p @ %zu bytes,  DMA %p / %" PRIxPTR
