@@ -84,6 +84,11 @@ void pru_exec(pru_t *const pru, const char *const program) {
     die("%s failed", program);
 }
 
+void pru_exec_code(pru_t *const pru, const unsigned int* code, int codeLen) {
+  if (prussdrv_exec_code(pru->pru_num, code, codeLen) < 0)
+    die("prussdrv_exec_code() failed");
+}
+
 void pru_close(pru_t *const pru) {
   // \todo unmap memory
   prussdrv_pru_wait_event(PRU_EVTOUT_0);

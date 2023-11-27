@@ -33,6 +33,8 @@ extern pru_t *pru_init(const unsigned short pru_num);
 
 extern void pru_exec(pru_t *const pru, const char *const program);
 
+extern void pru_exec_code(pru_t *const pru, const unsigned int* code, int codeLen);
+
 extern void pru_close(pru_t *const pru);
 
 /** Configure a GPIO pin.
