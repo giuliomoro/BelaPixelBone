@@ -51,7 +51,7 @@ pru_t *pru_init(const unsigned short pru_num) {
   const size_t ddr_filelen = ddr_size;
 
   /* map the memory */
-  uint8_t *const ddr_mem = mmap(0, ddr_filelen, PROT_WRITE | PROT_READ,
+  uint8_t *const ddr_mem = (uint8_t*)mmap(0, ddr_filelen, PROT_WRITE | PROT_READ,
                                 MAP_SHARED, mem_fd, ddr_offset);
   if (ddr_mem == MAP_FAILED)
     die("Failed to mmap offset %" PRIxPTR " @ %zu bytes: %s\n", ddr_offset,
@@ -59,15 +59,15 @@ pru_t *pru_init(const unsigned short pru_num) {
 
   close(mem_fd);
 
-  pru_t *const pru = calloc(1, sizeof(*pru));
+  pru_t *const pru = (pru_t*)calloc(1, sizeof(*pru));
   if (!pru)
     die("calloc failed: %s", strerror(errno));
 
   *pru = (pru_t) { .pru_num = pru_num,
                    .data_ram = pru_data_mem,
                    .data_ram_size = 8192, // how to determine?
-                   .ddr_addr = ddr_addr,
                    .ddr = (void *)(ddr_mem),
+                   .ddr_addr = ddr_addr,
                    .ddr_size = ddr_size, };
 
   printf("%s: PRU %d: data %p @ %zu bytes,  DMA %p / %" PRIxPTR
@@ -102,12 +102,12 @@ int pru_gpio(const unsigned gpio, const unsigned pin, const unsigned direction,
   FILE* value = fopen(value_name, "w");
   if(!value)
   {
-	FILE *const export = fopen(export_name, "w");
-	if (!export)
+	FILE *const export_fd = fopen(export_name, "w");
+	if (!export_fd)
 		die("%s: Unable to open? %s\n", export_name, strerror(errno));
 
-	fprintf(export, "%d\n", pin_num);
-	fclose(export);
+	fprintf(export_fd, "%d\n", pin_num);
+	fclose(export_fd);
   }
 
   value = fopen(value_name, "w");
